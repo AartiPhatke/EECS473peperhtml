@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PEPPR - Emergency Contact Input</title>
+    <style>
+        /* Universal styling */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Body styling */
+        body {
+            background-color: #f3f0fa;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #4e2171;
+            text-align: center;
+        }
+
+        /* Main title */
+        .title {
+            font-size: 72px;
+            font-weight: 700;
+            color: #5a0c76;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Subheading */
+        .subtitle {
+            font-size: 24px;
+            color: #4e2171;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+
+        /* Description paragraph */
+        p {
+            font-size: 18px;
+            color: #5a0c76;
+            max-width: 450px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        /* Instructions */
+        .instructions {
+            font-size: 16px;
+            color: #6b3f87;
+            max-width: 450px;
+            margin-bottom: 30px;
+            text-align: center; 
+        }
+
+        .instructions ul {
+            list-style-type: disc;
+            margin-left: 20px;
+            text-align: left; 
+        }
+
+        .instructions li {
+            margin-bottom: 15px; 
+        }
+
+        .instructions .instructions-title {
+            font-weight: bold;
+        }
+
+        /* Form styling */
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        /* Phone number inputs */
+        input[type="text"] {
+            padding: 14px;
+            margin: 18px 0;
+            width: 100%;
+            border: 1px solid #d1c5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #4e2171;
+            background-color: #f8f6fc;
+            transition: border 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: #5a0c76;
+            outline: none;
+        }
+
+        input[type="text"]::placeholder {
+            color: #a18bb9;
+        }
+
+        /* Checkbox label styling */
+        .checkbox-label {
+            margin-top: 15px;
+            font-size: 16px;
+            color: #4e2171;
+        }
+
+        /* Checkbox hover effect */
+        input[type="checkbox"]:hover {
+            opacity: 0.5; /* Reduces opacity on hover */
+            cursor: pointer;
+        }
+
+        /* Button styling */
+        button {
+            margin-top: 25px;
+            padding: 12px 24px;
+            background-color: #5a0c76;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #3d0750;
+        }
+
+        /* Response message */
+        #response {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #d9534f;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main title -->
+    <div class="title">PEPPR</div>
+    
+    <!-- Subheading and description -->
+    <div class="subtitle">Personal Emergency Pocket Pepper Repellent</div>
+    <p>Protect yourself and stay connected. Enter three emergency contact numbers, and PEPPR will alert them with your location when you trigger your spray.</p>
+    
+    <!-- Instructions section -->
+    <div class="instructions">
+        <p class="instructions-title">Instructions:</p> 
+        <ul>
+            <li>Provide your full name</li>
+            <li>Ensure that the device is powered on prior to submitting this form</li>
+            <li>Enter phone numbers in the format +1XXXXXXXXXX, without dashes or parentheses</li>
+            <li>Ensure that you replace the 3 AAA batteries in the device after each use for optimal performance</li>
+            <li>Important: The device's electronics may take up to 30 seconds to power on. We recommend turning the device on when you feel at risk to ensure it's ready for use</li>
+            <li>Alert will be sent from +1 (734)-802-1543</li>
+        </ul>
+    </div>
+
+    <!-- Form section with inputs and button -->
+    <div class="form-section">
+        <form id="phoneForm">
+            <!-- User Name Input -->
+            <input type="text" id="userName" placeholder="Your Name (50 Char Max)" required>
+            
+            <!-- Phone number inputs -->
+            <input type="text" id="number1" placeholder="Phone Number 1" required>
+            <input type="text" id="number2" placeholder="Phone Number 2" required>
+            <input type="text" id="number3" placeholder="Phone Number 3" required>
+
+            <div class="checkbox-label">    
+                <label for="Yes">
+                    <input type="checkbox" id="Yes" name="Yes">
+                    I would like to include 911 as an emergency contact
+                </label>
+            </div>
+            
+            <!-- Submit button -->
+            <button type="submit">Submit</button>
+        
+        </form>
+    </div>
+    
+    
+    <div id="response"></div>
+
+    <script>
+        document.getElementById('phoneForm').onsubmit = async function (event) {
+    event.preventDefault();
+
+    // Collect form input values
+    const numbers = [
+        document.getElementById('number1').value,
+        document.getElementById('number2').value,
+        document.getElementById('number3').value
+    ];
+    const userName = document.getElementById('userName').value;
+    const include911 = document.getElementById('Yes').checked;
+
+    // Create the payload to send to particle
+    const payload = JSON.stringify({ userName, numbers, include911 });
+
+    // loading message
+    const responseElement = document.getElementById('response');
+    responseElement.style.color = '#6b3f87'; 
+    responseElement.style.fontWeight = 'normal'; 
+    responseElement.style.marginBottom = "50px";
+    responseElement.innerText = "Submitting your information...";
+
+    try {
+        // Send the request to the Particle API
+        const response = await fetch('https://api.particle.io/v1/devices/e00fce68feef770c960142a6/submitNum', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer dfcfe33e249e0e9263e10a4f23df92f74eee8ac5',
+            },
+            body: JSON.stringify({ arg: payload })
+        });
+
+        const data = await response.json(); // save json response from particle api
+
+        if (response.ok && data.return_value === 1) {
+            // success response
+            responseElement.style.color = '#28a745'; // green
+            responseElement.style.fontWeight = 'normal';
+            responseElement.style.marginBottom = "50px";
+            responseElement.innerText = "Success! Your emergency contacts have been updated.";
+
+            // reset data to empty
+            document.getElementById('userName').value = '';
+            document.getElementById('number1').value = '';
+            document.getElementById('number2').value = '';
+            document.getElementById('number3').value = '';
+            document.getElementById('Yes').checked = false;
+
+        } else {
+            // error response
+            responseElement.style.color = '#d9534f'; // red
+            responseElement.style.fontWeight = 'normal';
+            responseElement.style.marginBottom = "50px";
+            responseElement.innerText = `Error: ${data.error || "Unexpected response from server."}`;
+        }
+    } catch (error) {
+        // some other error
+        responseElement.style.color = '#d9534f'; // red
+        responseElement.style.fontWeight = 'normal';
+        responseElement.style.marginBottom = "50px";
+        responseElement.innerText = "Failed to submit. Please check your network connection and try again.";
+        console.error("Submission error:", error); //debugging log
+    }
+};
+    </script>
+</body>
+</html>
